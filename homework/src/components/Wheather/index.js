@@ -1,42 +1,74 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { DashIcon } from './DashIcon';
+import axios from 'axios';
 
 export const Weather = () => {
+
+    const [city, setCity] = useState('');
+    const [unit, setUnit] = useState('metric');
+    const [weather, setWeather] = useState([]);
+
+    const getData = async (city, unit) => {
+        const { data } = await axios.get('http://api.openweathermap.org/data/2.5/weather', {
+            params: {
+                q: city,
+                units: unit,
+                appid: '16596fe956171a7376f2ba91213e3499'
+            }
+        })
+        return data;
+    }
+
+
+    const handleRadio = useCallback((e) => {
+        setUnit(e.target.value);
+    }, [])
+
+    const search = async (e) => {
+        if (e.key === 'Enter') {
+            const data = await getData(city, unit);
+            setWeather([
+                ...weather,
+                data
+            ]);
+            setCity('');
+            console.log(weather)
+        }
+    }
+
+
     return (
         <div className='container mt-5'>
-            <div className='row justify-content-center'>
-                <div className='col-7'>
-                    <input className='form-control' />
+            <div className="row">
+                <div className="col">
+                    <input onKeyPress={search} onChange={(e) => setCity(e.target.value)} type="text" value={city} className="form-control" placeholder="Type here" />
                 </div>
-                <div className='col-3 flex-column d-flex'>
+                <div className="col">
                     <div className="form-check">
-                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" />
-                        <label className="form-check-label" htmlFor="flexRadioDefault1">
-                            Default radio
-                        </label>
+                        <input onChange={handleRadio} className="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="metric" defaultChecked />
+                        <label className="form-check-label" htmlFor="exampleRadios1">
+                            Celsius
+                            </label>
                     </div>
                     <div className="form-check">
-                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked />
-                        <label className="form-check-label" htmlFor="flexRadioDefault2">
-                            Default checked radio
-                        </label>
+                        <input onChange={handleRadio} className="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="imperial" />
+                        <label className="form-check-label" htmlFor="exampleRadios2">
+                            Fahrenheit
+                            </label>
                     </div>
-                    <div className="form-check">
-                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" />
-                        <label className="form-check-label" htmlFor="flexRadioDefault3">
-                            Default checked radio
-                        </label>
+                    <div className="form-check disabled">
+                        <input onChange={handleRadio} className="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="kelvin" />
+                        <label className="form-check-label" htmlFor="exampleRadios3">
+                            Kelvin
+                            </label>
                     </div>
-                </div>
-                <div className='col-10 mt-3'>
-                    <ul>
-                        <li><DashIcon /> dsdsd</li>
-                        <li><DashIcon /> dsdsd</li>
-                        <li><DashIcon /> dsdsd</li>
-                        <li><DashIcon /> dsdsd</li>
-                    </ul>
                 </div>
             </div>
+            <ul>
+                {weather.map((weath, i) => (
+                    <li key={i}>{weath.name} = {weath.main.temp}</li>
+                ))}
+            </ul>
         </div>
     )
 }
