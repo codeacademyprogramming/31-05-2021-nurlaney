@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { DashIcon } from './DashIcon';
 import axios from 'axios';
 
@@ -32,16 +32,15 @@ export const Weather = () => {
                 data
             ]);
             setCity('');
-            console.log(weather)
         }
     }
-
 
     return (
         <div className='container mt-5'>
             <div className="row">
                 <div className="col">
-                    <input onKeyPress={search} onChange={(e) => setCity(e.target.value)} type="text" value={city} className="form-control" placeholder="Type here" />
+                    <label htmlFor='city'>Add city</label>
+                    <input name='city' onKeyPress={search} onChange={(e) => setCity(e.target.value)} type="text" value={city} className="form-control" placeholder="Type here" />
                 </div>
                 <div className="col">
                     <div className="form-check">
@@ -66,7 +65,7 @@ export const Weather = () => {
             </div>
             <ul>
                 {weather.map((weath, i) => (
-                    <li key={i}>{weath.name} = {weath.main.temp}</li>
+                    <li key={i}><DashIcon />{weath.name} = {weath.main.temp}</li>
                 ))}
             </ul>
         </div>
